@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="Generator" content="EditPlus®">
+		<meta name="Author" content="">
+		<meta name="Keywords" content="">
+		<meta name="Description" content="">
+		<title>手机号归属地查询</title>
+		<style type="text/css">
+			*{
+				margin:0;
+				padding:0;
+			}
+			html,body{
+				height:100%;
+				background:#030A12;
+			}
+			body{
+				background:url(images/bg1.jpg) center no-repeat;
+				border:1px solid #030A12;
+				background-size:100%;
+				overflow:hidden;
+			}
+			#telNumberBox{
+				padding:20px;
+				text-align:center;
+			}
+			.title{
+				color:#fff;
+				text-align:center;
+			}
+			#messageBox,#box{
+				width:400px;
+				margin:50px 130px;
+				background:#805173;
+				padding:10px;
+				-moz-border-radius:5px;
+				-webkit-border-radius:5px;
+				border-radius:5px;
+				box-shadow:0 0 10px #FFF3E9;
+				text-align:center;
+				float:left;
+			}
+			#telNumber{
+				width:350px;
+				height:40px;
+				border-radius:3px;
+				font-size:24px;
+				border:1px solid #ccc;
+				text-align:center;
+				margin-top:100px;
+			}
+			#send,#query{
+				border-radius:3px;
+				font-size:20px;
+				padding:5px;
+				background:#FCD5F2;
+				width:250px;
+				margin:20px auto;
+				cursor:pointer;
+			}
+			#message{
+				text-align:left;
+				display:inline-block;
+				margin:0 auto;
+				font-size:18px;
+				color:#fff;
+			}
+			#mesContent{
+				min-width:390px;
+				min-height:100px;
+				max-width:390px;
+				max-height:100px;
+				padding:5px;
+				border-radius:5px;
+				border:0;
+			}
+			lable{
+				color:#fff;
+				font-size:12px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="telNumberBox">
+			<input type="text" id="telNumber" placeholder="11位手机号码"/>
+		</div>
+		<div id="box" class="">
+			<h1 class="title">手机号归属地查询</h1>
+			<div id="query">查询</div>
+			<div id="message">
+				手机号：<br><br>
+				归属地：<br><br>
+				卡类型：<br><br>
+			</div>
+		</div>
+		<div id="messageBox">
+			<h1 class="title">发送短信</h1><br>
+			<textarea id="mesContent" placeholder="消息内容"></textarea>
+			<div id="send">发送</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$("#query").click(function(){
+				var telNumber = $("#telNumber").val();
+				if(telNumber!="" && telNumber.length!=11){
+					alert("手机号码格式不正确!");
+					return;
+				}
+				$.ajax({
+					url:"number/select",
+					type:"post",
+					dataType:"json",
+					data:{telNumber:telNumber},
+					success:function(result){
+						var html = '手机号：'+result.telNumber+'<br><br>'+
+							'归属地：'+result.address+'<br><br>'+
+							'卡类型：'+result.numberType+'<br><br>';
+						$("#message").html(html);
+					}
+				})
+			});
+			$("#send").click(function(){
+				var mesContent = $("#mesContent").val().trim();
+				var telNumber = $("#telNumber").val().trim();
+				if(telNumber == ""){
+					alert("请输入手机号码!");
+					return;
+				}
+				if(mesContent != ""){
+					$.ajax({
+						url:"number/send",
+						type:"post",
+						dataType:"json",
+						data:{telNumber:telNumber,mesContent:mesContent},
+						success:function(result){
+							if(result.result=="1"){
+								alert("消息已发送!");
+							}
+						}
+					})
+				}else{
+					$("#mesContent").attr("placeholder","消息内容不能为空").focus();
+				}
+			});
+		});
+	</script>
+</html>
